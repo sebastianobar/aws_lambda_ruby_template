@@ -1,0 +1,30 @@
+on:
+  push:
+    branches:
+      - "master"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+      - uses: actions/cache@v2
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+      - name: Build gems for AWS Lambda
+        run: |
+          bundle config set --local deployment 'true'
+          bundle config set --local without 'development'
+          docker run --rm -v "$PWD":/var/task lambci/lambda:build-ruby2.7 bundle install --jobs 4 --retry 3
+      - name: Preparezip package
+        run: zip -qq -r -j ./bundle.zip ./
+      - name: deploy zip to aws lambda
+        uses: appleboy/lambda-action@master
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ${{ secrets.AWS_REGION }}
+          function_name: aws-chat-randy
+          zip_file: bundle.zip
