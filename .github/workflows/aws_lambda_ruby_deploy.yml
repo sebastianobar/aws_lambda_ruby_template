@@ -19,7 +19,7 @@ jobs:
           bundle config set --local without 'development'
           bundle install --jobs 4 --retry 3
       - name: Prepare zip package
-        run: zip -q -r ./bundle.zip ./
+        run: zip -q -r ./bundle.zip source vendor Gemfile Gemfile.lock
       - name: deploy zip to aws lambda
         uses: appleboy/lambda-action@master
         with:
