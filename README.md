@@ -1,5 +1,5 @@
 # AWS Lambda Ruby Template
-I create this template to simply develop and deploy AWS Lambda Functions with Ruby 2.7 runtime from a GitHub repository.
+I created this template to simply develop and deploy AWS Lambda Functions with Ruby 2.7 runtime from a GitHub repository.
 
 It's also supported adding custom dependencies to Gemfile.
 
